@@ -1,0 +1,64 @@
+ # PPCU RS422 测试项目配置
+ name: "PPCU RS422 测试项目"
+ version: "1.0"
+ description: "PPCU推力器 RS422 通讯接口测试"
+ created: "2026-06-10"
+ 
+ transport:
+   type: tcp
+   config:
+     host: "192.168.1.100"
+     port: 2000
+     reconnect_max_retries: 3
+     reconnect_interval_s: 2
+     timeout_s: 3.0
+ 
+ protocol:
+   type: ccsds
+   config:
+     identifier: 0xEB90
+     apid: 0x520
+     endian: big
+     sequence_range: [0, 16383]
+     checksum_config:
+       type: sum_invert
+       range: [2, 9]
+ 
+ telemetry:
+   excel_path: "telemetry/遥测配置表.xlsx"
+   patches_path: "telemetry/user_overrides.yaml"
+   packages:
+     - name: "常规包1"
+       command_id: "APID_00C0"
+       frame_type: fast
+       default_poll: enabled
+       poll_interval_s: 1
+     - name: "常规包2"
+       command_id: "APID_00C1"
+       frame_type: fast
+       default_poll: enabled
+       poll_interval_s: 1
+     - name: "查询包1"
+       command_id: "APID_00C8"
+       frame_type: slow
+       default_poll: disabled
+     - name: "查询包2"
+       command_id: "APID_00CC"
+       frame_type: slow
+       default_poll: disabled
+ 
+ commands:
+   excel_path: "commands/立即遥控指令配置表.xlsx"
+ 
+ injections:
+   - name: "参数注入0x03FF"
+     excel_path: "injections/fixed_address_param_config.xlsx"
+   - name: "参数注入0x03FE"
+     excel_path: "injections/fixed_address_param_config_2.xlsx"
+ 
+ safety:
+   policy_path: "safety.yaml"
+   auto_connect: false
+ 
+ session:
+   auto_restore: true

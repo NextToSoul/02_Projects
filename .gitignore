@@ -1,0 +1,34 @@
+ # Byte-compiled
+ __pycache__/
+ *.py[cod]
+ *$py.class
+ 
+ # Distribution / packaging
+ build/
+ dist/
+ *.spec
+ *.exe
+ 
+ # Reports (auto-generated)
+ reports/
+ 
+ # Data (runtime-generated)
+ data/*.db
+ data/*.sqlite
+ 
+ # User overrides (auto-generated)
+ profiles/*/telemetry/user_overrides.yaml
+ 
+ # IDE
+ .vscode/
+ .idea/
+ *.swp
+ *.swo
+ *~
+ 
+ # OS
+ Thumbs.db
+ .DS_Store
+ 
+ # Logs
+ *.log

@@ -1,0 +1,22 @@
+ # GUI
+ PySide6>=6.6.0
+ 
+ # Data processing
+ openpyxl>=3.1.0
+ pyyaml>=6.0
+ 
+ # Reports
+ jinja2>=3.1.0
+ python-docx>=1.1.0
+ 
+ # Packaging
+ pyinstaller>=6.0.0
+ 
+ # Serial/CAN (optional, for future transport extensions)
+ # pyserial>=3.5      # 串口通讯
+ # python-can>=4.3    # CAN 总线通讯
+ 
+ # Server (optional, Phase 5 remote monitoring)
+ # fastapi>=0.100
+ # uvicorn>=0.23
+ # websockets>=11.0

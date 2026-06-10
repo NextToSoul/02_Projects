@@ -1,0 +1,28 @@
+ # PPCU RS422 安全策略
+ 
+ enabled: true
+ 
+ block_categories:
+   - name: "复位指令"
+     commands:
+       - "TCHEDTTA001"
+     blocked: true
+     reason: "复位操作为高危操作，默认禁止"
+ 
+   - name: "模式切换"
+     commands:
+       - "TCHEDTTA003_9"
+     blocked: true
+     reason: "维护模式需手动确认后才能发送"
+ 
+ high_risk_commands:
+   - command_id: "TCHEDTTA001"
+     name: "复位"
+     confirm_required: true
+   - command_id: "TCHEDTTA003_9"
+     name: "维护模式"
+     confirm_required: true
+ 
+ param_injection:
+   validate_range: true
+   max_value_per_injection: 600.0

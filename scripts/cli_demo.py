@@ -172,7 +172,7 @@ async def main():
            # 模拟解析
            mock_voltage_data = bytes([0x5D, 0xC0] + [0] * 46)
            snap = parser.parse_packet(mock_voltage_data, [tm1008])[0]
-           print(f"  Scale 测试 ({tm1008.param_id} {tm1008.param_name}): "
+           print(f"  Scale 测试 ({tm1008.id} {tm1008.name}): "
                  f"scale={tm1008.scale}, phys={snap.physical_value}{snap.unit}")
    
    # ─── 6. 测试安全保护 ───────────────────────────

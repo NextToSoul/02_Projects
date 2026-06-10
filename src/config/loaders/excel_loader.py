@@ -35,7 +35,7 @@ class ExcelLoader:
         packages = []
 
         for sheet_name in wb.sheetnames:
-            if sheet_name.startswith("~$"):
+            if sheet_name.startswith("~$") or "帧格式参考" in sheet_name:
                 continue  # 跳过临时文件
             
             ws = wb[sheet_name]
@@ -49,16 +49,16 @@ class ExcelLoader:
                 param = TelemetryParam(
                     id=str(param_id).strip(),
                     name=str(row[2]).strip() if row[2] else "",
-                    data_offset=int(row[3]) if row[3] is not None else 0,
-                    bit_offset=int(row[4]) if row[4] is not None else 0,
-                    bit_length=int(row[5]) if row[5] is not None else 8,
-                    data_type=str(row[6]).strip().lower() if row[6] else "uint8",
-                    endian=str(row[7]).strip().lower() if row[7] else "big",
-                    scale=float(row[8]) if row[8] is not None else 1.0,
+                    data_offset=ExcelLoader._safe_int(row[3]),
+                    bit_offset=ExcelLoader._safe_int(row[4]),
+                    bit_length=ExcelLoader._safe_int(row[5], 8),
+                     data_type=str(row[6]).strip().lower() if row[6] else "uint8",
+                     endian=str(row[7]).strip().lower() if row[7] else "big",
+                    scale=ExcelLoader._safe_float(row[8], 1.0),
                     decimal_places=int(row[9]) if row[9] is not None else None,
                     unit=str(row[10]).strip() if row[10] else "",
-                    range_min=ExcelLoader._try_float(row[11]),
-                    range_max=ExcelLoader._try_float(row[12]),
+                    range_min=ExcelLoader._safe_float(row[11]),
+                    range_max=ExcelLoader._safe_float(row[12]),
                     enum_values=ExcelLoader._parse_enum(
                         str(row[13]) if row[13] else ""
                     ),
@@ -83,7 +83,7 @@ class ExcelLoader:
             raise ImportError("openpyxl is required to load Excel files")
         
         wb = openpyxl.load_workbook(excel_path, data_only=True, read_only=True)
-        ws = wb.active
+        ws = wb[wb.sheetnames[0]]
         commands = []
 
         consecutive_empty = 0
@@ -104,52 +104,44 @@ class ExcelLoader:
                 app_process_id=str(row[4]).strip() if row[4] else "05 20",
                 data_length=str(row[5]).strip() if row[5] else "00 01",
                 command_code=str(row[6]).strip() if row[6] else "",
-                default_param=str(row[7]).strip() if row[7] else "",
-                is_polling=str(row[8]).strip() == "是" if row[8] else False,
+                default_param=str(row[7]).strip() if len(row)>7 and row[7] else "",
+                    is_polling=False,
             ))
 
         return commands
 
     @staticmethod
     def load_injections(excel_paths: list[dict]) -> list[InjectionDef]:
-        """加载固定地址参数注入表"""
+        """加载固定地址参数注入表 (新格式)"""
+        TYPE_MAP = {"float": "float32", "uint32": "uint32", "uint16": "uint16", "uint8": "uint8"}
         injections = []
         for inj_def in excel_paths:
             path = inj_def.get("excel_path", "")
             name = inj_def.get("name", "Unknown")
             if not path:
                 continue
-            
             wb = openpyxl.load_workbook(path, data_only=True)
-            ws = wb["Parameters"]
+            ws = wb[wb.sheetnames[0]]
             params = []
-            
-            for row in ws.iter_rows(min_row=4, values_only=True):
-                # Row format: No. | English Name | Chinese Name | Byte Offset
-                #              | Byte Length | Unit | Data Type | Default | Remark
+            for row in ws.iter_rows(min_row=2, values_only=True):
                 chinese_name = row[2]
                 if chinese_name is None:
                     continue
-                
+                bit_len = int(row[6]) if row[6] is not None else 32
+                raw_type = str(row[7]).strip() if row[7] else ""
+                mapped_type = TYPE_MAP.get(raw_type, "float32")
                 params.append(InjectionParamDef(
                     name=str(chinese_name).strip(),
-                    byte_offset=int(row[3]) if row[3] is not None else 0,
-                    byte_length=int(row[4]) if row[4] is not None else 4,
-                    data_type=str(row[6]).strip().lower() if row[6] else "float32",
-                    default_value=str(row[7]).strip() if row[7] else "",
-                    unit=str(row[5]).strip() if row[5] else "",
+                    byte_offset=int(row[4]) if row[4] is not None else 2,
+                    byte_length=bit_len // 8,
+                    data_type=mapped_type,
+                    default_value=str(row[3]).strip() if row[3] and str(row[3]).strip() not in ["-", ""] else "",
+                    unit=str(row[10] if len(row)>10 else None).strip() if row[10] and str(row[10]).strip() not in ["-", ""] else "",
                 ))
-            
-            injections.append(InjectionDef(
-                name=name,
-                parameters=params,
-            ))
-        
+            injections.append(InjectionDef(name=name, parameters=params))
         return injections
 
 
-
-    @staticmethod
     def _try_float(value) -> float | None:
         if value is None:
             return None
@@ -161,14 +153,6 @@ class ExcelLoader:
 
 
     @staticmethod
-    def _try_float(value) -> float | None:
-        if value is None:
-            return None
-        try:
-            return float(value)
-        except (ValueError, TypeError):
-            return None
-
     @staticmethod
     def _parse_enum(enum_str: str) -> dict[int, str] | None:
         """解析枚举列：'0:待机模式; 1:推进模式; 2:应急模式'"""
@@ -184,3 +168,17 @@ class ExcelLoader:
                 except ValueError:
                     continue
         return result if result else None
+
+    @staticmethod
+    def _safe_int(value,default=0):
+        if value is None or str(value).strip() in [chr(45),chr(34)+chr(34)]:
+            return default
+        try: return int(value)
+        except: return default
+
+    @staticmethod
+    def _safe_float(value,default=None):
+        if value is None or str(value).strip() in [chr(45),chr(34)+chr(34)]:
+            return default
+        try: return float(value)
+        except: return default

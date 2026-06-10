@@ -1,4 +1,4 @@
- # PPCU RS422 测试项目配置
+﻿ # PPCU RS422 测试项目配置
  name: "PPCU RS422 测试项目"
  version: "1.0"
  description: "PPCU推力器 RS422 通讯接口测试"
@@ -52,9 +52,9 @@
  
  injections:
    - name: "参数注入0x03FF"
-     excel_path: "injections/fixed_address_param_config.xlsx"
+     excel_path: "injections/固定地址参数注入1.xlsx"
    - name: "参数注入0x03FE"
-     excel_path: "injections/fixed_address_param_config_2.xlsx"
+     excel_path: "injections/固定地址参数注入2.xlsx"
  
  safety:
    policy_path: "safety.yaml"
@@ -62,3 +62,5 @@
  
  session:
    auto_restore: true
+
+

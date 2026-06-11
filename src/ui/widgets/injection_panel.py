@@ -6,6 +6,7 @@ import logging
 
 from PySide6.QtCore import Qt, Slot
 from PySide6.QtWidgets import (
+    QGroupBox,
     QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QComboBox, QPushButton, QTableWidget,
     QTableWidgetItem, QHeaderView, QMessageBox,

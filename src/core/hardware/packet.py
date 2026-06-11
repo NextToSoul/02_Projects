@@ -95,8 +95,7 @@ class BitFieldParser:
         bit_offset 是从数据域起始的绝对位位置
         """
         # 计算实际的字节和位位置
-        total_bits = bit_offset + bit_length
-        needed_bytes = (total_bits + 7) // 8
+        needed_bytes = byte_offset + (bit_length + 7) // 8
         
         if byte_offset + needed_bytes > len(data):
             logger.warning(

@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import logging
 
-from PySide6.QtCore import Slot
+from PySide6.QtCore import Qt, Slot
 from PySide6.QtWidgets import (
     QMainWindow, QToolBar, QStatusBar,
-    QWidget, QTabWidget, QVBoxLayout, QHBoxLayout,
+    QWidget, QSplitter, QVBoxLayout, QHBoxLayout,
     QLabel, QPushButton, QComboBox, QMessageBox,
 )
 
@@ -102,22 +102,41 @@ class MainWindow(QMainWindow):
 
     # ==== 3. \u4e2d\u592e TabWidget (3 \u4e2a\u6807\u7b7e\u9875\u5360\u4f4d) ====
     def _create_central_area(self):
-        self._tabs = QTabWidget()
-        
-        
+        """3\u5217 QSplitter \u5e03\u5c40: \u9065\u6d4b\u6570\u636e\u8868 + \u6307\u4ee4\u53d1\u9001 + \u53c2\u6570\u6ce8\u5165"""
+        splitter_h = QSplitter(Qt.Horizontal)
 
-        # Tab 1: \u9065\u6d4b\u6570\u636e\u8868
-        self._tabs.addTab(QLabel("\u9065\u6d4b\u6570\u636e\u5c06\u5728\u540e\u7eed\u6b65\u9aa4\u4e2d\u5b9e\u73b0"), "\u9065\u6d4b\u6570\u636e\u8868")
+        # \u9762\u677f 1: \u9065\u6d4b\u6570\u636e\u8868
+        p1 = QWidget(); l1 = QVBoxLayout(p1)
+        l1.setContentsMargins(4, 4, 4, 4)
+        l1.addWidget(QLabel("\u9065\u6d4b\u6570\u636e\u8868 (\u5f85\u5b9e\u73b0)"))
+        splitter_h.addWidget(p1)
 
-        # Tab 2: \u6307\u4ee4\u53d1\u9001
-        self._tabs.addTab(QLabel("\u6307\u4ee4\u53d1\u9001\u5c06\u5728\u540e\u7eed\u6b65\u9aa4\u4e2d\u5b9e\u73b0"), "\u6307\u4ee4\u53d1\u9001")
+        # \u9762\u677f 2: \u6307\u4ee4\u53d1\u9001
+        p2 = QWidget(); l2 = QVBoxLayout(p2)
+        l2.setContentsMargins(4, 4, 4, 4)
+        l2.addWidget(QLabel("\u6307\u4ee4\u53d1\u9001 (\u5f85\u5b9e\u73b0)"))
+        splitter_h.addWidget(p2)
 
-        # Tab 3: \u53c2\u6570\u6ce8\u5165
-        self._tabs.addTab(QLabel("\u53c2\u6570\u6ce8\u5165\u5c06\u5728\u540e\u7eed\u6b65\u9aa4\u4e2d\u5b9e\u73b0"), "\u53c2\u6570\u6ce8\u5165")
+        # \u9762\u677f 3: \u53c2\u6570\u6ce8\u5165
+        p3 = QWidget(); l3 = QVBoxLayout(p3)
+        l3.setContentsMargins(4, 4, 4, 4)
+        l3.addWidget(QLabel("\u53c2\u6570\u6ce8\u5165 (\u5f85\u5b9e\u73b0)"))
+        splitter_h.addWidget(p3)
 
-        self.setCentralWidget(self._tabs)
+        splitter_h.setSizes([400, 400, 400])
 
-    # ==== 4. \u72b6\u6001\u680f (3 \u4e2a\u533a\u57df) ====
+        # \u5e95\u90e8: \u62a5\u6587\u76d1\u89c6\u5668
+        bottom = QWidget(); bl = QVBoxLayout(bottom)
+        bl.setContentsMargins(4, 4, 4, 4)
+        bl.addWidget(QLabel("\u62a5\u6587\u76d1\u89c6\u5668 (\u5f85\u5b9e\u73b0)"))
+
+        # \u603b\u5e03\u5c40: \u4e0a(3\u5217) + \u4e0b(\u62a5\u6587)
+        main_splitter = QSplitter(Qt.Vertical)
+        main_splitter.addWidget(splitter_h)
+        main_splitter.addWidget(bottom)
+        main_splitter.setSizes([600, 200])
+
+        self.setCentralWidget(main_splitter)
     def _create_status_bar(self):
         sb = self.statusBar()
         # \u5de6: \u8fde\u63a5\u72b6\u6001/\u63d0\u793a\u4fe1\u606f

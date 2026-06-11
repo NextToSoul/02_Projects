@@ -58,8 +58,7 @@ class AsyncWorker(QThread):
         if result:
             detail = f"{cfg.get('host')}:{cfg.get('port')}"
             self.connection_changed.emit(True, detail)
-            if self._polling_mgr:
-                self._polling_mgr.start_all_default()
+            # \u8fde\u63a5\u6210\u529f\uff0c\u4e0d\u81ea\u52a8\u8f6e\u8be2
         else:
             self.connection_changed.emit(False, "连接失败")
 

@@ -154,7 +154,7 @@ class ExcelLoader:
 
     @staticmethod
     @staticmethod
-    def _parse_enum(enum_str: str) -> dict[int, str] | None:
+    def _parse_enum(enum_str: str) -> dict[str, str] | None:
         """解析枚举列：'0:待机模式; 1:推进模式; 2:应急模式'"""
         if not enum_str or enum_str == "None":
             return None
@@ -164,7 +164,7 @@ class ExcelLoader:
             if ":" in pair:
                 key, val = pair.split(":", 1)
                 try:
-                    result[int(key.strip())] = val.strip()
+                    result[key.strip()] = val.strip()
                 except ValueError:
                     continue
         return result if result else None

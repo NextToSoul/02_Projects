@@ -35,7 +35,7 @@ class TelemetryParam:
     unit: str = ""
     range_min: float | None = None
     range_max: float | None = None
-    enum_values: dict[int, str] | None = None  # {0: "待机模式", ...}
+    enum_values: dict[str, str] | None = None  # {0: "待机模式", ...}
 
 
 @dataclass
@@ -87,6 +87,7 @@ class CommandDef:
     command_code: str = "00 5A"      # 指令码（hex）
     default_param: str = ""          # 默认参数（hex）
     is_polling: bool = False         # 是否轮询指令
+    enum_values: dict[str, str] | None = None  # 枚举取值说明
 
 
 @dataclass

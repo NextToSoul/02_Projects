@@ -151,7 +151,7 @@ class BitFieldParser:
         """应用换算系数和枚举映射"""
         # 枚举类型：直接映射
         if enum_values and data_type == "enum":
-            return enum_values.get(int(raw_value), f"Unknown(0x{raw_value:X})")
+            return enum_values.get(str(int(raw_value)), f"Unknown(0x{raw_value:X})")
         
         # float32：IEEE754 已经解析过，不应用 scale
         if data_type == "float32":

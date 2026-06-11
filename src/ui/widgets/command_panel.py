@@ -29,7 +29,13 @@ class CommandPanel(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(4, 4, 4, 4)
 
-        # \u6307\u4ee4\u5217\u8868 (\u6eda\u52a8\u680f)\n        self._list_group = QGroupBox("\u6307\u4ee4\u5217\u8868")\n        self._list_group.setCheckable(True)\n        self._list_group.setChecked(True)\n        lg = QVBoxLayout(self._list_group)\n        self._cmd_list = QListWidget()\n        if self._ctx.command_registry:
+        # \u6307\u4ee4\u5217\u8868 (\u6eda\u52a8\u680f)
+        self._list_group = QGroupBox("\u6307\u4ee4\u5217\u8868")
+        self._list_group.setCheckable(True)
+        self._list_group.setChecked(True)
+        lg = QVBoxLayout(self._list_group)
+        self._cmd_list = QListWidget()
+        if self._ctx.command_registry:
             for cmd in self._ctx.command_registry.list_commands():
                 item = QListWidgetItem(f"{cmd.id} - {cmd.name}")
                 item.setData(Qt.UserRole, cmd.id)

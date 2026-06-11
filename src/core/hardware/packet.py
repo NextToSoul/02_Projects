@@ -97,9 +97,9 @@ class BitFieldParser:
         # 计算实际的字节和位位置
         needed_bytes = byte_offset + (bit_length + 7) // 8
         
-        if byte_offset + needed_bytes > len(data):
+        if needed_bytes > len(data):
             logger.warning(
-                f"Data too short: need {byte_offset + needed_bytes}B, have {len(data)}B"
+                f"Data too short: need {needed_bytes}B, have {len(data)}B"
             )
             return 0
         

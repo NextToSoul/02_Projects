@@ -42,3 +42,12 @@
  - src/core/safety/guard.py — SafetyGuard
  - src/config/loader.py — ProfileLoader
  - src/config/loaders/excel_loader.py — ExcelLoader
+## Self-Improvement 日志
+
+学习记录统一写入 `.learnings/` 目录下:
+- `LEARNINGS.md` — 修正、知识缺口、最佳实践
+- `ERRORS.md` — 命令失败和集成错误
+- `FEATURE_REQUESTS.md` — 用户请求的能力
+
+使用 `self-improvement` 技能时，按标准格式追加到对应文件。
+不要写入 `docs/experience_notes.md`（该文件内容已迁移至 `.learnings/`）。

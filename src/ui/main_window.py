@@ -198,11 +198,7 @@ class MainWindow(QMainWindow):
     def _on_error(self, source, msg):
         self._status_label.setText(f"\u9519\u8bef [{source}]: {msg}")
 
-    # ==== 7. \u5c5e\u6027 ====
+   # ==== 7. \u5c5e\u6027 ====
     @property
     def conn_bar(self):
         return self._conn_bar
-
-    @property
-    def tabs(self):
-        return self._tabs

@@ -433,10 +433,57 @@
  SafetyGuard / SeqManager / StepExecutor / CaseRunner / SuiteRunner
  CLI 验证脚本 — 不依赖 UI 跑通完整测试循环
  
- ### Phase 2: 基础 UI (~7天)
- MainWindow / EngineSignals 事件总线 / App 组装
- TelemetryTableView / PollingControlBar / MessageMonitor
- SafetyPanel / 连接状态栏 / QSS 样式
+ ### Phase 2: 桌面 UI（拼图式 8 步实现）
+
+采用 QThread Worker 架构解决 Qt ↔ asyncio 事件循环冲突：
+Worker 线程持独立的 asyncio 事件循环（loop.run_forever()），
+通过 Qt 信号（线程安全、自动 QueuedConnection）回传结果到 UI 线程。
+
+布局结构：
+┌── 工具栏 ──────────────────────────────────────────────────┐
+│ [IP输入] [端口输入] [●连接/断开] [项目切换] [启动/暂停/停止轮询]│
+├── 中央区域（QTabWidget） ───────────────────────────────────┤
+│ [遥测数据表] [指令发送] [参数注入]                            │
+├── 报文监视器 ───────────────────────────────────────────────┤
+│ 上半 hex 着色日志 + 下半结构化表格                           │
+├── 状态栏 ───────────────────────────────────────────────────┤
+│ 就绪 | 遥测包: 3/3 活跃 | 最近接收: 常规包1                  │
+
+分步计划：
+第 1 步: AsyncWorker(QThread) + ConnectionBar 通讯连接
+  文件: src/core/engine/async_worker.py, src/ui/widgets/connection_bar.py
+  效果: IP/端口输入框 + 连接/断开按钮 + 状态栏反馈
+  功能: TCP 连接/断开，异步事件循环在后台持续运行
+
+第 2 步: MainWindow 骨架
+  文件: src/ui/main_window.py + src/ui/resources/style.qss
+  效果: 菜单栏(文件/测试/配置/帮助)、工具栏、中央TabWidget、状态栏
+  功能: 窗口框架就位，所有面板预留位置
+
+第 3 步: 遥测数据表 + 指令发送 + 参数注入
+  文件: src/ui/widgets/telemetry.py, command_panel.py, injection_panel.py
+  效果: Tab1=遥测5列表格, Tab2=指令下拉+参数+发送, Tab3=注入参数表编辑+写入
+  功能: 遥测实时刷新、手动发指令、批量参数注入
+
+第 4 步: 轮询控制栏
+  文件: src/ui/widgets/polling_control.py
+  效果: 每包一行[包名/状态灯/▶一次/●轮询/⏸暂停] + 全局启停
+  功能: 逐包控制轮询模式
+
+第 5 步: 报文监视器
+  文件: src/ui/widgets/monitor.py
+  效果: 上半着色hex日志(蓝TX/绿RX/红FAIL) + 下半结构化表格
+  功能: 实时报文显示
+
+第 6 步: 信号配线 + 全链路联动
+  文件: src/app.py
+  效果: 连接后自动轮询 → 遥测/报文自动刷新
+  功能: EngineSignals 全线配齐
+
+第 7 步: 安全面板 + QSS 主题
+  文件: src/ui/dialogs/safety_panel.py
+  效果: 指令拦截/高危确认配置对话框 + 蓝白专业配色
+  功能: 安全策略可视化编辑
  
  ### Phase 3: 用例系统 (~5天)
  TestSuiteTree / TestCaseEditor / 各步骤编辑器 Widget

@@ -13,6 +13,9 @@ from PySide6.QtWidgets import (
 
 from ..core.signals import EngineSignals
 from .widgets.connection_bar import ConnectionBar
+from .widgets.telemetry import TelemetryTableView
+from .widgets.command_panel import CommandPanel
+from .widgets.injection_panel import InjectionPanel
 
 logger = logging.getLogger(__name__)
 class MainWindow(QMainWindow):
@@ -106,22 +109,16 @@ class MainWindow(QMainWindow):
         splitter_h = QSplitter(Qt.Horizontal)
 
         # \u9762\u677f 1: \u9065\u6d4b\u6570\u636e\u8868
-        p1 = QWidget(); l1 = QVBoxLayout(p1)
-        l1.setContentsMargins(4, 4, 4, 4)
-        l1.addWidget(QLabel("\u9065\u6d4b\u6570\u636e\u8868 (\u5f85\u5b9e\u73b0)"))
-        splitter_h.addWidget(p1)
+        self._telemetry_view = TelemetryTableView(self._ctx.telemetry_registry, self._signals)
+        splitter_h.addWidget(self._telemetry_view)
 
         # \u9762\u677f 2: \u6307\u4ee4\u53d1\u9001
-        p2 = QWidget(); l2 = QVBoxLayout(p2)
-        l2.setContentsMargins(4, 4, 4, 4)
-        l2.addWidget(QLabel("\u6307\u4ee4\u53d1\u9001 (\u5f85\u5b9e\u73b0)"))
-        splitter_h.addWidget(p2)
+        self._command_panel = CommandPanel(self._ctx, self._worker, self._signals)
+        splitter_h.addWidget(self._command_panel)
 
         # \u9762\u677f 3: \u53c2\u6570\u6ce8\u5165
-        p3 = QWidget(); l3 = QVBoxLayout(p3)
-        l3.setContentsMargins(4, 4, 4, 4)
-        l3.addWidget(QLabel("\u53c2\u6570\u6ce8\u5165 (\u5f85\u5b9e\u73b0)"))
-        splitter_h.addWidget(p3)
+        self._injection_panel = InjectionPanel(self._ctx, self._worker, self._signals)
+        splitter_h.addWidget(self._injection_panel)
 
         splitter_h.setSizes([400, 400, 400])
 

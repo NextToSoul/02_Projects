@@ -8,6 +8,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from datetime import datetime
+from ..models import CommandDef
 
 from PySide6.QtCore import QThread, Signal
 
@@ -47,6 +48,29 @@ class AsyncWorker(QThread):
 
     def disconnect(self):
         if self._loop: asyncio.run_coroutine_threadsafe(self._do_disconnect(), self._loop)
+    def send_command(self, cmd_id: str, param_value: str = ""):
+        if self._loop:
+            asyncio.run_coroutine_threadsafe(self._do_send_command(cmd_id, param_value), self._loop)
+
+    async def _do_send_command(self, cmd_id: str, param_value: str = ""):
+        if not self._transport.is_connected():
+            return
+        cmd = self._ctx.command_registry.get_command(cmd_id)
+        if not cmd:
+            return
+        params = {"value": param_value} if param_value else None
+        seq = self._seq.next()
+        frame = self._protocol.encode_command(cmd, seq, params)
+        await self._transport.send(frame)
+        ts = datetime.now().strftime("%H:%M:%S.%f")[:12]
+        self.raw_frame_sent.emit(ts, frame.hex(" ").upper())
+        try:
+            resp = await self._transport.recv(timeout_s=2.0)
+            if resp:
+                finfo = self._protocol.decode_frame(resp)
+                self.raw_frame_received.emit(ts, resp.hex(" ").upper(), finfo.checksum_ok)
+        except:
+            pass
 
     def stop(self):
         if self._loop:

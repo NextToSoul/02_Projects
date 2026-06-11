@@ -91,6 +91,27 @@ class AsyncWorker(QThread):
             self._polling_mgr.stop_all()
         await self._transport.disconnect()
         self.connection_changed.emit(False, "已断开")
+    def start_polling_all(self):
+        if self._loop and self._polling_mgr:
+            asyncio.run_coroutine_threadsafe(self._do_start_polling_all(), self._loop)
+
+    async def _do_start_polling_all(self):
+        self._polling_mgr.start_all_default()
+
+    def pause_polling_all(self):
+        if self._loop and self._polling_mgr:
+            asyncio.run_coroutine_threadsafe(self._do_pause_polling_all(), self._loop)
+
+    async def _do_pause_polling_all(self):
+        self._polling_mgr.pause_all()
+
+    def stop_polling_all(self):
+        if self._loop and self._polling_mgr:
+            asyncio.run_coroutine_threadsafe(self._do_stop_polling_all(), self._loop)
+
+    async def _do_stop_polling_all(self):
+        self._polling_mgr.stop_all()
+
 
     @property
     def polling_manager(self):

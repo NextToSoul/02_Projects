@@ -26,10 +26,16 @@ class InjectionPanel(QWidget):
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(4, 4, 4, 4)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        self._group = QGroupBox("参数注入")
+        self._group.setCheckable(True)
+        self._group.setChecked(True)
+        gl = QVBoxLayout(self._group)
+        gl.setContentsMargins(4, 4, 4, 4)
 
         # \u6ce8\u5165\u8868\u4e0b\u62c9
-        layout.addWidget(QLabel("注\u5165\u8868:"))
+        gl.addWidget(QLabel("注\u5165\u8868:"))
         self._inj_combo = QComboBox()
         self._inj_index = {}  # name -> InjectionDef
         if self._ctx.command_registry:
@@ -37,7 +43,7 @@ class InjectionPanel(QWidget):
                 self._inj_combo.addItem(inj.name, inj.name)
                 self._inj_index[inj.name] = inj
         self._inj_combo.currentTextChanged.connect(self._on_table_changed)
-        layout.addWidget(self._inj_combo)
+        gl.addWidget(self._inj_combo)
 
         # \u53c2\u6570\u5217\u8868
         self._param_table = QTableWidget()
@@ -48,7 +54,7 @@ class InjectionPanel(QWidget):
         self._param_table.setAlternatingRowColors(True)
         self._param_table.setFont(self._param_table.font())
         self._param_table.verticalHeader().hide()
-        layout.addWidget(self._param_table, stretch=1)
+        gl.addWidget(self._param_table, stretch=1)
 
         # \u6309\u94ae\u884c
         btn_row = QHBoxLayout()
@@ -64,12 +70,12 @@ class InjectionPanel(QWidget):
         self._reset_btn.clicked.connect(self._on_reset_defaults)
         btn_row.addWidget(self._reset_btn)
 
-        layout.addLayout(btn_row)
+        gl.addLayout(btn_row)
 
         # \u72b6\u6001
         self._status_label = QLabel("就绪")
         self._status_label.setStyleSheet("color: gray;")
-        layout.addWidget(self._status_label)
+        gl.addWidget(self._status_label)
 
         # \u52a0\u8f7d\u9ed8\u8ba4\u8868
         if self._inj_combo.count() > 0:

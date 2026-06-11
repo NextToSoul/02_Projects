@@ -174,19 +174,16 @@ class MainWindow(QMainWindow):
 
     # --- 6c. \u8f6e\u8be2\u63a7\u5236 ---
     def _on_poll_start_all(self):
-        logger.info("Poll start all requested")
-        if hasattr(self._ctx, "polling_manager") and self._ctx.polling_manager:
-            self._ctx.polling_manager.start_all_default()
+        if hasattr(self._worker, 'start_polling_all'):
+            self._worker.start_polling_all()
 
     def _on_poll_pause_all(self):
-        logger.info("Poll pause all requested")
-        if hasattr(self._ctx, "polling_manager") and self._ctx.polling_manager:
-            self._ctx.polling_manager.pause_all()
+        if hasattr(self._worker, 'pause_polling_all'):
+            self._worker.pause_polling_all()
 
     def _on_poll_stop_all(self):
-        logger.info("Poll stop all requested")
-        if hasattr(self._ctx, "polling_manager") and self._ctx.polling_manager:
-            self._ctx.polling_manager.stop_all()
+        if hasattr(self._worker, 'stop_polling_all'):
+            self._worker.stop_polling_all()
 
     @Slot(str, str)
     def _on_poll_mode_changed(self, pkg_name: str, mode_str: str):

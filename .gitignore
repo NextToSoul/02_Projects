@@ -36,3 +36,6 @@
 # Virtual environment.venv/
 
 .venv/
+fix_*.py
+fix_*.ps1
+*.bak

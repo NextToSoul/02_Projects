@@ -44,6 +44,14 @@ class PpuTestBenchApp:
         self.worker.connection_changed.connect(self.signals.connection_changed.emit)
         self.worker.error_occurred.connect(self.signals.error_occurred.emit)
         self.worker.polling_manager = pm
+        # 信号桥接: Worker → EngineSignals
+        self.worker.raw_frame_sent.connect(self.signals.raw_frame_sent.emit)
+        self.worker.raw_frame_received.connect(self.signals.raw_frame_received.emit)
+        # 遥测数据回调: PollingManager → EngineSignals
+        if hasattr(pm, 'on_telemetry_updated'):
+            pm.on_telemetry_updated(
+                lambda pkg, snaps: self.signals.telemetry_updated.emit(pkg, snaps)
+            )
 
         default_cfg = ctx.profile.transport_config if ctx.profile else {}
         self.window = MainWindow(ctx, self.signals, self.worker, default_cfg)

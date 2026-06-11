@@ -39,6 +39,7 @@ class PackagePoller:
         cmd_def: CommandDef | None,
         seq_mgr: SequenceManager,
         cache: TelemetryCache,
+        on_data=None,
     ):
         self.pkg = pkg_def
         self._transport = transport
@@ -47,6 +48,7 @@ class PackagePoller:
         self._seq = seq_mgr
         self._cache = cache
         self._parser = BitFieldParser()
+        self._on_data = on_data
         
         self.mode: PollMode = PollMode.DISABLED
         self._task: asyncio.Task | None = None
@@ -101,6 +103,8 @@ class PackagePoller:
         
         # 6. 更新缓存
         self._cache.update_package(self.pkg.name, snapshots)
+        if self._on_data:
+            self._on_data(self.pkg.name, snapshots)
         
         return snapshots
 
@@ -126,6 +130,7 @@ class PollingManager:
         protocol: ProtocolCodec,
         seq_mgr: SequenceManager,
         cache: TelemetryCache,
+        on_data=None,
     ):
         self._transport = transport
         self._protocol = protocol
@@ -134,7 +139,8 @@ class PollingManager:
         self._pollers: dict[str, PackagePoller] = {}
         self._registry: TelemetryRegistry | None = None
         self._cmd_registry: CommandRegistry | None = None
-        self._status_callbacks: list = []  # for UI signal integration
+        self._status_callbacks: list = []
+        self._telemetry_callbacks: list = []  # for UI signal integration
 
     def set_registries(self, registry: TelemetryRegistry, cmd_registry: CommandRegistry):
         """设置遥测和指令注册表"""
@@ -154,6 +160,7 @@ class PollingManager:
             cmd_def=cmd,
             seq_mgr=self._seq,
             cache=self._cache,
+            on_data=self._on_telemetry_callback,
         )
         self._pollers[pkg_def.name] = poller
 
@@ -236,6 +243,18 @@ class PollingManager:
                 cb(package, mode.value)
             except Exception as e:
                 logger.warning(f"Status callback error: {e}")
+    def on_telemetry_updated(self, callback):
+        """注册遥测数据回调"""
+        self._telemetry_callbacks.append(callback)
+
+    def _on_telemetry_callback(self, package: str, snapshots: list):
+        """PackagePoller 回调——转发给所有监听者"""
+        for cb in self._telemetry_callbacks:
+            try:
+                cb(package, snapshots)
+            except Exception as e:
+                logger.warning(f"Telemetry callback error: {e}")
+
 
     @property
     def active_pollers(self) -> list[str]:

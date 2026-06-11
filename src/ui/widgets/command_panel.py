@@ -5,6 +5,8 @@ from __future__ import annotations
 from PySide6.QtCore import Qt, Slot
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
+    QGroupBox,
+    QGroupBox,
     QWidget, QVBoxLayout, QHBoxLayout, QFormLayout,
     QLabel, QListWidget, QListWidgetItem, QLineEdit,
     QPushButton, QTextEdit, QGroupBox,
@@ -36,7 +38,8 @@ class CommandPanel(QWidget):
                 item.setData(Qt.UserRole, cmd.id)
                 self._cmd_list.addItem(item)
         self._cmd_list.currentItemChanged.connect(self._on_cmd_selected)
-        layout.addWidget(self._cmd_list, stretch=1)
+        lg.addWidget(self._cmd_list)
+        layout.addWidget(self._list_group, stretch=1)
 
         # \u6307\u4ee4\u8be6\u60c5 (\u53ef\u6298\u53e0)
         self._detail_group = QGroupBox("指\u4ee4\u8be6\u60c5")

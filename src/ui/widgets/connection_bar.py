@@ -49,7 +49,7 @@ class ConnectionBar(QWidget):
             try:
                 cfg = {
                     "host": self._ip_input.text().strip(),
-                    "port": int(self._port_input.text().strip()),
+                    "port": int(self._port_input.text().strip()) if self._port_input.text().strip() else 0,
                     "reconnect_max_retries": 1,
                     "reconnect_interval_s": 1,
                     "timeout_s": 3.0,
@@ -83,6 +83,6 @@ class ConnectionBar(QWidget):
     @property
     def port(self) -> int:
         try:
-            return int(self._port_input.text().strip())
+            return int(self._port_input.text().strip()) if self._port_input.text().strip() else 0
         except ValueError:
             return 0

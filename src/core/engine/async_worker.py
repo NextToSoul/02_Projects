@@ -29,6 +29,7 @@ class AsyncWorker(QThread):
         self._protocol = protocol
         self._seq = seq_mgr
         self._loop = None
+        self._loop_ready = True
         self._polling_mgr = None
 
     def run(self):
@@ -42,10 +43,10 @@ class AsyncWorker(QThread):
             logger.info("AsyncWorker: asyncio loop stopped")
 
     def connect(self, cfg: dict):
-        asyncio.run_coroutine_threadsafe(self._do_connect(cfg), self._loop)
+        if self._loop: asyncio.run_coroutine_threadsafe(self._do_connect(cfg), self._loop)
 
     def disconnect(self):
-        asyncio.run_coroutine_threadsafe(self._do_disconnect(), self._loop)
+        if self._loop: asyncio.run_coroutine_threadsafe(self._do_disconnect(), self._loop)
 
     def stop(self):
         if self._loop:

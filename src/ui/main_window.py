@@ -105,8 +105,8 @@ class MainWindow(QMainWindow):
     # ==== 3. \u4e2d\u592e TabWidget (3 \u4e2a\u6807\u7b7e\u9875\u5360\u4f4d) ====
     def _create_central_area(self):
         self._tabs = QTabWidget()
-        self._tabs.setDocumentMode(True)
-        self._tabs.setElideMode(Qt.ElideRight)
+        
+        self._tabs.tabBar().setElideMode(Qt.TextElideMode.ElideRight)
 
         # Tab 1: \u9065\u6d4b\u6570\u636e\u8868
         self._tabs.addTab(QLabel("\u9065\u6d4b\u6570\u636e\u5c06\u5728\u540e\u7eed\u6b65\u9aa4\u4e2d\u5b9e\u73b0"), "\u9065\u6d4b\u6570\u636e\u8868")
@@ -178,7 +178,7 @@ class MainWindow(QMainWindow):
     def _on_poll_mode_changed(self, pkg_name: str, mode_str: str):
         # \u66f4\u65b0\u72b6\u6001\u680f\u4e2d\u7684\u9065\u6d4b\u5305\u8ba1\u6570
         if hasattr(self._ctx, "polling_manager") and self._ctx.polling_manager:
-            total = len(self._ctx.polling_manager._pollers)
+            total = len(self._ctx.telemetry_registry.list_packages())
             active = len(self._ctx.polling_manager.active_pollers)
             self._pkg_status.setText(f"\u9065\u6d4b\u5305: {active}/{total} \u6d3b\u8dc3")
 

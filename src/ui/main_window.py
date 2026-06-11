@@ -15,8 +15,6 @@ from ..core.signals import EngineSignals
 from .widgets.connection_bar import ConnectionBar
 
 logger = logging.getLogger(__name__)
-
-
 class MainWindow(QMainWindow):
     """PPCU TestBench 主窗口"""
 
@@ -106,7 +104,7 @@ class MainWindow(QMainWindow):
     def _create_central_area(self):
         self._tabs = QTabWidget()
         
-        self._tabs.tabBar().setElideMode(Qt.TextElideMode.ElideRight)
+        
 
         # Tab 1: \u9065\u6d4b\u6570\u636e\u8868
         self._tabs.addTab(QLabel("\u9065\u6d4b\u6570\u636e\u5c06\u5728\u540e\u7eed\u6b65\u9aa4\u4e2d\u5b9e\u73b0"), "\u9065\u6d4b\u6570\u636e\u8868")

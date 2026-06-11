@@ -34,3 +34,5 @@
  *.log
 
 # Virtual environment.venv/
+
+.venv/

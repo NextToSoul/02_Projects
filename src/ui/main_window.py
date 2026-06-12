@@ -105,29 +105,25 @@ class MainWindow(QMainWindow):
 
     # ==== 3. \u4e2d\u592e TabWidget (3 \u4e2a\u6807\u7b7e\u9875\u5360\u4f4d) ====
     def _create_central_area(self):
-        """3\u5217 QSplitter \u5e03\u5c40: \u9065\u6d4b\u6570\u636e\u8868 + \u6307\u4ee4\u53d1\u9001 + \u53c2\u6570\u6ce8\u5165"""
+        """2列 QSplitter 布局: 遥测(左) | 指令+注入(右)"""
+        right_splitter = QSplitter(Qt.Vertical)
+        self._command_panel = CommandPanel(self._ctx, self._worker, self._signals)
+        right_splitter.addWidget(self._command_panel)
+        self._injection_panel = InjectionPanel(self._ctx, self._worker, self._signals)
+        right_splitter.addWidget(self._injection_panel)
+        right_splitter.setSizes([300, 300])
         splitter_h = QSplitter(Qt.Horizontal)
-
-        # \u9762\u677f 1: \u9065\u6d4b\u6570\u636e\u8868
         self._telemetry_view = TelemetryTableView(self._ctx.telemetry_registry, self._signals)
         splitter_h.addWidget(self._telemetry_view)
-
-        # \u9762\u677f 2: \u6307\u4ee4\u53d1\u9001
-        self._command_panel = CommandPanel(self._ctx, self._worker, self._signals)
-        splitter_h.addWidget(self._command_panel)
-
-        # \u9762\u677f 3: \u53c2\u6570\u6ce8\u5165
-        self._injection_panel = InjectionPanel(self._ctx, self._worker, self._signals)
-        splitter_h.addWidget(self._injection_panel)
-
-        splitter_h.setSizes([400, 400, 400])
+        splitter_h.addWidget(right_splitter)
+        splitter_h.setSizes([600, 400])
 
         # \u5e95\u90e8: \u62a5\u6587\u76d1\u89c6\u5668
         bottom = QWidget(); bl = QVBoxLayout(bottom)
         bl.setContentsMargins(4, 4, 4, 4)
         bl.addWidget(QLabel("\u62a5\u6587\u76d1\u89c6\u5668 (\u5f85\u5b9e\u73b0)"))
 
-        # \u603b\u5e03\u5c40: \u4e0a(3\u5217) + \u4e0b(\u62a5\u6587)
+        # \u603b\u5e03\u5c40: \u4e0a(\u5de6\u53f32\u5217) + \u4e0b(\u62a5\u6587)
         main_splitter = QSplitter(Qt.Vertical)
         main_splitter.addWidget(splitter_h)
         main_splitter.addWidget(bottom)

@@ -273,7 +273,7 @@ class StepExecutor:
                     if resp:
                         from ..hardware.packet import BitFieldParser
                         parser = BitFieldParser()
-                        header_size = 6
+                        header_size = 8
                         payload = resp[header_size:-2]
                         snapshots = parser.parse_packet(payload, pkg.parameters)
                         self._cache.update_package(step.package, snapshots)

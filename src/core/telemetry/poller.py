@@ -95,7 +95,7 @@ class PackagePoller:
             return None
         
         # 4. 计算数据域起始位置
-        header_size = 6  # CCSDS 基本帧头 6 字节
+        header_size = 8  # 帧头 8 字节: 标识符(2) + APID(2) + 序列号(2) + 数据长度(2)
         data_payload = response[header_size:-2]  # 去掉校验和
         
         # 5. 位域解析

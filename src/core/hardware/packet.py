@@ -95,11 +95,11 @@ class BitFieldParser:
         bit_offset 是从数据域起始的绝对位位置
         """
         # 计算实际的字节和位位置
-        needed_bytes = byte_offset + (bit_length + 7) // 8
-        
-        if needed_bytes > len(data):
+        needed_bytes = (bit_length + 7) // 8
+
+        if byte_offset + needed_bytes > len(data):
             logger.warning(
-                f"Data too short: need {needed_bytes}B, have {len(data)}B"
+                f"Data too short: need {byte_offset + needed_bytes}B, have {len(data)}B"
             )
             return 0
         
@@ -218,3 +218,11 @@ class BitFieldParser:
             # fallback
             int_val = int(value / scale) if scale else int(value)
             return int_val.to_bytes(byte_length, "big" if big else "little")
+        needed_bytes = (bit_length + 7) // 8
+        if byte_offset + needed_bytes > len(data):
+            logger.warning(
+                f"Data too short: need {byte_offset + needed_bytes}B, have {len(data)}B"
+            )
+            return 0
+
+        chunk = data[byte_offset:byte_offset + needed_bytes]
